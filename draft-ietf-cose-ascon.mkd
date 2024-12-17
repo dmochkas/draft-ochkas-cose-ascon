@@ -1,0 +1,266 @@
+---
+title: Ascon-AEAD128 for JOSE and COSE
+# abbrev: 
+docname: draft-ietf-cose-ascon-00
+date: 2024-12-09
+category: info
+
+ipr: trust200902
+area: General
+# workgroup:  
+keyword: Internet-Draft
+
+stand_alone: yes
+pi: [toc, sortrefs, symrefs]
+
+author:
+ -
+    ins: D. Ochkas
+    name: Dmytro Ochkas
+    organization: IMT Atlantique
+    email: dmytro.ochkas@imt-atlantique.fr
+ -
+    ins: H. Le Bouder
+    name: Hélène Le Bouder
+    organization: IMT Atlantique
+    email: helene.le-bouder@imt-atlantique.fr
+ -
+    ins: A. Pelov
+    name: Alexander Pelov
+    organization: IMT Atlantique
+    email: alexander.pelov@imt-atlantique.fr
+
+normative:
+  RFC2119:
+  RFC7516:
+  RFC7517:
+  RFC7518:
+  RFC8174:
+  RFC9052:
+  RFC9053:
+  IANA.cose:
+  IANA.jose:
+
+informative:
+  asconv1.2-caesar:
+    title: Ascon v1.2, Submission to Round 3 of the CAESAR competition
+    target: https://competitions.cr.yp.to/round3/asconv12.pdf
+    author:
+      -
+        name: Christoph Dobraunig
+      -
+        name: Maria Eichlseder
+      -
+        name: Florian Mendel
+      -
+        name: Martin Schläffer
+    date: 2016
+  asconv1.2-nist:
+    title: Ascon v1.2, Submission to Final Round of the NIST Lightweight Cryptography project
+    target: https://csrc.nist.gov/CSRC/media/Projects/lightweight-cryptography/documents/finalist-round/updated-spec-doc/ascon-spec-final.pdf
+    author:
+      -
+        name: Christoph Dobraunig
+      -
+        name: Maria Eichlseder
+      -
+        name: Florian Mendel
+      -
+        name: Martin Schläffer
+    date: 2021
+  NIST.SP.800-232:
+    title: Ascon-Based Lightweight Cryptography Standards for Constrained Devices
+    target: https://doi.org/10.6028/NIST.SP.800-232.ipd
+    author:
+      -
+        name: Meltem Sönmez Turan
+      -
+        name: Kerry A. McKay
+      -
+        name: Jinkeon Kang
+      -
+        name: John Kelsey
+    date: 2024
+    seriesinfo:
+      DOI: 10.6028/NIST.SP.800-232
+
+
+--- abstract
+
+This document describes JSON Object Signing and Encryption (JOSE) and
+CBOR Object Signing and Encryption (COSE) serializations with Ascon which
+received a lot of attention in the area of lightweight cryptography.
+
+In 2019, as a part of CAESAR competition, Ascon-128 and Ascon-128a were
+selected as the first choice for the lightweight authenticated encryption [asconv1.2-caesar].
+After, in 2023, National Institute of Standards and Technology (NIST) selected
+Ascon family of cryptographic algorithms to be the standard for lightweight
+cryptography [asconv1.2-nist]. This recognition make it particularly interesting to use Ascon with
+COSE and JOSE structures.
+
+This document does not define any new cryptography, only
+serializations of existing cryptographic systems described in
+{{NIST.SP.800-232}}.
+
+--- middle
+
+Introduction        {#intro}
+============
+
+Constrained networks such as Internet of Things (IoT) networks most of the
+time are characterized by the limited computational power and autonomy.
+In this context, the choice of suitable cryptographic algorithms that provide
+a robust security without consuming large amount of resources is essential.
+As a winner of lightweight cryptography standardization process conducted by
+NIST, Ascon family of cryptographic algorithms is a perfect candidate for
+the described situation.
+
+Ascon-Based Lightweight Cryptography Standards for Constrained Devices
+{{NIST.SP.800-232}} introduces a suite of algorithms to provide Authenticated
+Encryption with Associated Data (AEAD), a hash function, and two eXtendable
+Output Functions (XOFs).
+
+This document focuses on the AEAD part of Ascon standard. It enables the
+usage of Ascon-AEAD128 with JOSE and COSE for the content encryption.
+
+
+Terminology  {#need}
+===========
+
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+"SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+"OPTIONAL" in this document are to be interpreted as described in
+BCP 14 {{RFC2119}} {{RFC8174}} when, and only when, they appear in all
+capitals, as shown here.
+
+
+Ascon algorithms  {#algos}
+================
+
+In the scope of this document, only the authenticated encryption Ascon
+is allowed for. Ascon's encryption and decryption algorithms are parametrized
+by the key length k, the rate r, and the internal round numbers a and b.
+{{NIST.SP.800-232}} specifies the Ascon-AEAD128 algorithm with the following parameters:
+
+|Key Length, k|Rate, r|Outer permutation rounds, a|Inner permutation rounds, b|
+|128|128|12|8|
+{: #asconaeadparams title="Ascon-AEAD128 parameters"}
+
+Thus, this document requests the registration of the Ascon-AEAD128 algorithm in {{IANA.cose}}:
+
+|Name|alg|Description|
+|Ascon-AEAD128|TBD (requested assignment XXX)|CBOR Object Encryption Algorithm for Ascon-AEAD128|
+{: #cosealgos title="COSE Algorithms for Ascon"}
+
+In COSE, keys may be obtained from either a key structure or a recipient structure {{RFC9052}}.
+
+When using a COSE key for this algorithm, the following checks are made:
+
+  * The "kty" field MUST be present, and it MUST be "Symmetric".
+
+  * If the "alg" field is present, it MUST match the Ascon-AEAD128 algorithm being used.
+
+  * If the "key_ops" field is present, it MUST include "encrypt" or "wrap key" when encrypting.
+
+  * If the "key_ops" field is present, it MUST include "decrypt" or "unwrap key" when decrypting.
+
+
+Also, this document requests the registration of the Ascon-AEAD128 algorithm in {{IANA.jose}}: 
+
+|Name|enc|Description|
+|Ascon-AEAD128|Ascon-AEAD128|JSON Object Encryption Algorithm for Ascon-AEAD128|
+{: #josealgos title="JOSE Algorithms for Ascon"}
+
+Implementations that are encrypting or decrypting MUST validate that the key type, key length,
+and algorithm are correct and appropriate for the entities involved.
+
+IV Header Parameter   {#iv}
+===================
+
+Unlike some common AEAD algorithms, Ascon distinguishes between the notion
+of initialization vector (IV) and nonce (N). While N is the input argument
+for the Ascon encryption/decryption functions, IV is the constant defined
+for each Ascon algorithm and is based on its parameters.
+
+However, {{IANA.cose}} does not define a separate header parameter to specify Nonce.
+Thus, in COSE, whenever Full Initialization Vector Header Parameter (Name: IV,
+Label: 5) or Partial Initialization Vector Header Parameter (Name: Partial IV, Label: 6) is
+specified it MUST refer to the N argument of the corresponding Ascon function.
+
+On the other hand, JSON Web Signature and Encryption Header Parameters registry
+at {{IANA.jose}} defines both Nonce Header Parameter ("nonce") and Initialization
+Vector Header Parameter ("iv"). That is, in JOSE, both "nonce" and "iv"
+parameters MUST refer to the N argument of the corresponding Ascon function.
+There SHOULD NOT be "nonce" and "iv" parameters specified at the same time.
+In case, "nonce" and "iv" parameters are specified simultaneously, Nonce Header
+Parameter MUST take precedence.
+
+
+Security Considerations  {#security}
+=======================
+
+The security considerations for {{RFC7516}}, {{RFC7517}} and {{RFC9053}} apply to
+this specification as well. 
+
+According to the most recent security analysis publications, Ascon did not show any
+security vulnerabilities so far and the best attacks target the initialization of Ascon
+reduced to 7 (out of 12) rounds, concluding that Ascon has a security margin of 5 rounds
+(42 % of the 12 rounds).
+
+Refer to the Ascon's List of Published Analysis section at [asconv1.2-nist] for more details.
+
+IANA Considerations  {#iana}
+===================
+
+Additions to Existing Registries
+--------------------------------
+
+### New COSE Algorithms ###
+
+IANA is requested to add the following entries to the COSE Algorithms
+Registry. The following completed registration templates are
+provided as described in {{RFC9052}} and {{RFC9053}}.
+
+#### Ascon-AEAD128 for COSE ####
+
+*  Name: Ascon-AEAD128
+
+*  Value: TBD (requested assignment 35)
+
+*  Description: CBOR Object Encryption Algorithm with Ascon-AEAD128
+
+*  Capabilities: [kty]
+
+*  Reference: FIPS XXX
+
+*  Recommended: Yes
+
+### New JOSE Algorithms ###
+
+IANA is requested to add the following entries to the JSON Web
+Signature and Encryption Algorithms Registry. The following
+completed registration templates are provided as described in
+{{RFC7518}}.
+
+#### Ascon-AEAD128 for JOSE ####
+
+*  Algorithm Name: Ascon-AEAD128
+
+*  Algorithm Description: Ascon-AEAD128 as described in FIPS XXX.
+
+*  Algorithm Usage Location(s): enc
+
+*  JOSE Implementation Requirements: Optional
+
+*  Change Controller: IESG
+
+*  Specification Document(s): FIPS XXX
+
+*  Algorithm Analysis Documents(s): n/a
+
+
+Examples  {#xmp}
+========
+
+This appendix provides some examples of ...
+

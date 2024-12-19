@@ -160,9 +160,9 @@ When using a COSE key for this algorithm, the following checks are made:
 
   * If the "alg" field is present, it MUST match the Ascon-AEAD128 algorithm being used.
 
-  * If the "key_ops" field is present, it MUST include "encrypt" or "wrap key" when encrypting.
+  * If the "key_ops" field is present, it MUST include "encrypt" when encrypting.
 
-  * If the "key_ops" field is present, it MUST include "decrypt" or "unwrap key" when decrypting.
+  * If the "key_ops" field is present, it MUST include "decrypt" when decrypting.
 
 
 Also, this document requests the registration of the Ascon-AEAD128 algorithm in {{IANA.jose}}: 
@@ -259,8 +259,49 @@ completed registration templates are provided as described in
 *  Algorithm Analysis Documents(s): n/a
 
 
+--- back
+
 Examples  {#xmp}
 ========
 
-This appendix provides some examples of ...
+This appendix provides some examples of various Ascon-AEAD128 Encryptions with COSE and JOSE
+
+COSE
+----
+
+### Simple Ascon-AEAD128 Encryption ###
+
+~~~~~~~~~~
+{
+  "plaintext": "546869732069732074686520636f6e74656e742e",
+  "nonce": "00000000000000000000000000000000",
+  "AAD": "8367456E637279707443A1010140",
+  "CEK": "849B57219DAE48DE646D07DBB533566E",
+  "Encrypt0": "d08344a1011823a1055000000000000000000000000000000000582436ba4da1fa787205e5fff06fd4b645c637c02b505046fb242984864e1f6875c4ae5c9557",
+  "Encrypt0_diag": "16([h'A1011823', {5: h'00000000000000000000000000000000'}, h'36BA4DA1FA787205E5FFF06FD4B645C637C02B505046FB242984864E1F6875C4AE5C9557'])"  
+}
+~~~~~~~~~~
+
+### Direct Ascon-AEAD128 Encryption with HKDF-SHA-256 ###
+
+~~~~~~~~~~
+{
+  "plaintext": "546869732069732074686520636f6e74656e742e",
+  "nonce": "00000000000000000000000000000000",
+  "AAD": "8367456E637279707443A1010140",
+  "CEK": "849B57219DAE48DE646D07DBB533566E",
+  "key": {
+    "kid": "6F75722D736563726574",
+    "kty": "Symmetric"
+  },
+  "salt": "61616262636364646565666667676868",
+  "Encrypt": "d8608444a1011823a105500000000000000000000000000000000058247b09f4de6d93b6779163d978efa2d7eaac699acad60a6a9779168b5569d57ef92d3102bf818343a10129a2044a6f75722d73656372657433506161626263636464656566666767686840",
+  "Encrypt_diag": "96([h'A1011823', {5: h'00000000000000000000000000000000'}, h'7B09F4DE6D93B6779163D978EFA2D7EAAC699ACAD60A6A9779168B5569D57EF92D3102BF', [[h'A10129', {4: h'6F75722D736563726574', -20: h'61616262636364646565666667676868'}, h'']]])"
+}
+~~~~~~~~~~
+
+JOSE
+----
+
+TODO:
 

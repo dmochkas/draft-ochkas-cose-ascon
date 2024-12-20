@@ -303,5 +303,22 @@ COSE
 JOSE
 ----
 
+### Direct Compact JWE structure using Ascon-AEAD128 ### 
+
+~~~~~~~~~~
+{
+  "plaintext": "546869732069732074686520636f6e74656e742e",
+  "nonce": "00000000000000000000000000000000",
+  "protected": {
+    "alg":"dir",
+    "enc":"Ascon-AEAD128"
+  },
+  "CEK": "849B57219DAE48DE646D07DBB533566E",
+  "jwe": "eyJhbGciOiJkaXIiLCJlbmMiOiJBc2Nvbi1BRUFEMTI4In0..AAAAAAAAAAAAAAAAAAAAAA.XjkRZmV9Dy0lpQp_4yUYIY1CGN8.zUqKLKMQnqjXFY258aNMgw"
+}
+
+
+~~~~~~~~~~
+
 TODO:
 

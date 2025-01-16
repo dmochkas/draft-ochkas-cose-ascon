@@ -1,8 +1,8 @@
 ---
 title: Ascon-AEAD128 for JOSE and COSE
 # abbrev: 
-docname: draft-ietf-cose-ascon-00
-date: 2024-12-09
+docname: draft-ochkas-cose-ascon-00
+date: 2025-01-08
 category: info
 
 ipr: trust200902
@@ -149,7 +149,7 @@ by the key length k, the rate r, and the internal round numbers a and b.
 Thus, this document requests the registration of the Ascon-AEAD128 algorithm in {{IANA.cose}}:
 
 |Name|alg|Description|
-|Ascon-AEAD128|TBD (requested assignment XXX)|CBOR Object Encryption Algorithm for Ascon-AEAD128|
+|Ascon-AEAD128|TBD (requested assignment 35)|CBOR Object Encryption Algorithm for Ascon-AEAD128|
 {: #cosealgos title="COSE Algorithms for Ascon"}
 
 In COSE, keys may be obtained from either a key structure or a recipient structure {{RFC9052}}.
@@ -189,11 +189,10 @@ specified it MUST refer to the N argument of the corresponding Ascon function.
 
 On the other hand, JSON Web Signature and Encryption Header Parameters registry
 at {{IANA.jose}} defines both Nonce Header Parameter ("nonce") and Initialization
-Vector Header Parameter ("iv"). That is, in JOSE, both "nonce" and "iv"
-parameters MUST refer to the N argument of the corresponding Ascon function.
-There SHOULD NOT be "nonce" and "iv" parameters specified at the same time.
-In case, "nonce" and "iv" parameters are specified simultaneously, Nonce Header
-Parameter MUST take precedence.
+Vector Header Parameter ("iv"). However, the "nonce" parameter is intended to be used
+only for signatures. That is, in JOSE, "iv" parameters MUST refer to the N argument
+of the corresponding Ascon function. There SHOULD NOT be "nonce" parameters specified
+while using Ascon for content encryption. In case "nonce" parameter is specified it MUST be ignored.
 
 
 Security Considerations  {#security}

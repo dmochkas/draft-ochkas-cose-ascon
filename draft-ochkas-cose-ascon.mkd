@@ -95,7 +95,7 @@ In 2019, as a part of CAESAR competition, Ascon-128 and Ascon-128a were
 selected as the first choice for the lightweight authenticated encryption [asconv1.2-caesar].
 After, in 2023, National Institute of Standards and Technology (NIST) selected
 Ascon family of cryptographic algorithms to be the standard for lightweight
-cryptography [asconv1.2-nist]. This recognition make it particularly interesting to use Ascon with
+cryptography [asconv1.2-nist]. This recognition makes it particularly interesting to use Ascon with
 COSE and JOSE structures.
 
 This document does not define any new cryptography, only
@@ -109,9 +109,9 @@ Introduction        {#intro}
 
 Constrained networks such as Internet of Things (IoT) networks most of the
 time are characterized by the limited computational power and autonomy.
-In this context, the choice of suitable cryptographic algorithms that provide
-a robust security without consuming large amount of resources is essential.
-As a winner of lightweight cryptography standardization process conducted by
+In this context, the choice of suitable cryptographic algorithms that provide 
+robust security without consuming large amount of resources is essential.
+As a winner of the lightweight cryptography standardization process conducted by
 NIST, Ascon family of cryptographic algorithms is a perfect candidate for
 the described situation.
 
@@ -121,7 +121,7 @@ Encryption with Associated Data (AEAD), a hash function, and two eXtendable
 Output Functions (XOFs).
 
 This document focuses on the AEAD part of Ascon standard. It enables the
-usage of Ascon-AEAD128 with JOSE and COSE for the content encryption.
+usage of Ascon-AEAD128 with JOSE and COSE for content encryption.
 
 
 Terminology  {#need}

@@ -146,6 +146,8 @@ by the key length k, the rate r, and the internal round numbers a and b.
 |128|128|12|8|
 {: #asconaeadparams title="Ascon-AEAD128 parameters"}
 
+COSE encryption and decryption with Ascon-AEAD128 is done in accordance with Section 5.3 of {{RFC9052}}.
+
 Thus, this document requests the registration of the Ascon-AEAD128 algorithm in {{IANA.cose}}:
 
 |Name|alg|Description|

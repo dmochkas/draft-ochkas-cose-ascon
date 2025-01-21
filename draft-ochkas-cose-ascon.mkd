@@ -1,8 +1,8 @@
 ---
 title: Ascon-AEAD128 for JOSE and COSE
 # abbrev: 
-docname: draft-ochkas-cose-ascon-00
-date: 2025-01-08
+docname: draft-ochkas-cose-ascon-01
+date: 2025-01-21
 category: info
 
 ipr: trust200902

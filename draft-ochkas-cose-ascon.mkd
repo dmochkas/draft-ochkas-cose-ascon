@@ -2,7 +2,7 @@
 title: Ascon-AEAD128 for COSE and JOSE
 # abbrev: 
 docname: draft-ochkas-cose-ascon-02
-date: 2025-09-03
+date: 2025-09-09
 category: info
 
 ipr: trust200902
@@ -70,7 +70,7 @@ informative:
     date: 2021
   NIST.SP.800-232:
     title: Ascon-Based Lightweight Cryptography Standards for Constrained Devices
-    target: https://doi.org/10.6028/NIST.SP.800-232.ipd
+    target: https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-232.pdf
     author:
       -
         name: Meltem Sönmez Turan
@@ -80,7 +80,7 @@ informative:
         name: Jinkeon Kang
       -
         name: John Kelsey
-    date: 2024
+    date: August 2025
     seriesinfo:
       DOI: 10.6028/NIST.SP.800-232
 

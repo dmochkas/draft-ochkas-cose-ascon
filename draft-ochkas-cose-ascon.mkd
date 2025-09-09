@@ -322,7 +322,7 @@ This appendix provides some examples of various Ascon-AEAD128 Encryptions with C
 COSE
 ----
 
-### Simple Ascon-AEAD128 Encryption ###
+### Simple Ascon-AEAD128 encryption ###
 
 ~~~~~~~~~~
 {
@@ -335,7 +335,7 @@ COSE
 }
 ~~~~~~~~~~
 
-### Direct Ascon-AEAD128 Encryption with Recipient ###
+### Direct Ascon-AEAD128 encryption with recipient ###
 
 ~~~~~~~~~~
 {
@@ -352,7 +352,7 @@ COSE
 }
 ~~~~~~~~~~
 
-### Direct Ascon-AEAD128 Encryption with HKDF-SHA-256 ###
+### Direct Ascon-AEAD128 encryption with HKDF-SHA-256 ###
 
 ~~~~~~~~~~
 {
@@ -373,6 +373,41 @@ COSE
 JOSE
 ----
 
-### Direct Compact JWE structure using Ascon-AEAD128 ### 
+The examples use the following plaintext and cek:
 
-TODO: 
+~~~~~~~~~~
+{
+  "plaintext": "This is the content.",
+  "CEK_hex": "849B57219DAE48DE646D07DBB533566E"
+}
+~~~~~~~~~~
+
+### JWE structure with direct Ascon-AEAD128 encryption ### 
+
+~~~~~~~~~~
+{
+  "protected": "eyJhbGciOiJkaXIiLCJlbmMiOiJBc2Nvbi1BRUFEMTI4In0", \* {"alg": "dir", "enc": "Ascon-AEAD128"} *\
+  "aad": "g2dFbmNyeXB0Q6EBAUE",
+  "encrypted_key": "",
+  "iv": "AAAAAAAAAAAAAAAAAAAAAA",
+  "tag": "EihrljYH6xrt08Ae9Slqzw",
+  "ciphertext": "dMbnoonoAEUph2N4KWIj_i_L-oo"
+}
+~~~~~~~~~~
+
+### JWE structure with Ascon-AEAD128 encryption and AES-128 Key Wrap ###
+
+~~~~~~~~~~
+{
+  "protected": "eyJhbGciOiJBMTI4S1ciLCJlbmMiOiJBc2Nvbi1BRUFEMTI4Iiwia2lkIjoiYWJjZGVmIn0", \* {"alg":"A128KW","enc":"Ascon-AEAD128","kid":"abcdef"} *\
+  "aad": "g2dFbmNyeXB0Q6EBAUE",
+  "header": {
+    "alg": "A128KW",
+    "kid": "abcdef"
+  },
+  "encrypted_key": "V4d7CMPzWA3ntHiL4gcN5EYoQJX2t-Gw",
+  "iv": "AAAAAAAAAAAAAAAAAAAAAA",
+  "tag": "9vY9jDG2LZOVmHsD6kHgkA",
+  "ciphertext": "wZJfEzhC59fiqtnKtYpXqCi0-Xo"
+}
+~~~~~~~~~~

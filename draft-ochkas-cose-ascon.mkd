@@ -1,7 +1,7 @@
 ---
 title: Ascon-AEAD128 and Ascon-Hash256 for COSE
 # abbrev: 
-docname: draft-ochkas-cose-ascon-04
+docname: draft-ochkas-cose-ascon-05
 date: 2026-07-06
 category: info
 

@@ -2,7 +2,7 @@
 title: Ascon-AEAD128 and Ascon-Hash256 for COSE
 # abbrev: 
 docname: draft-ochkas-cose-ascon-05
-date: 2026-10-13
+date: 2026-10-26
 category: info
 
 ipr: trust200902
@@ -29,14 +29,19 @@ author:
     name: Alexander Pelov
     organization: IMT Atlantique
     email: alexander.pelov@imt-atlantique.fr
+ -
+    ins: S. Hristozov
+    name: Stefan Hristozov
+    organization: Infineon
+    email: Stefan.Hristozov@infineon.com
 
 normative:
   RFC2104:
   RFC2119:
   RFC5869:
-  RFC7516:
-  RFC7517:
-  RFC7518:
+#  RFC7516:
+#  RFC7517:
+#  RFC7518:
   RFC8174:
   RFC9052:
   RFC9053:
@@ -85,7 +90,15 @@ informative:
     date: August 2025
     seriesinfo:
       DOI: 10.6028/NIST.SP.800-232
-
+  NIST.SP.800-108r1-upd1:
+    title: Recommendation for Key Derivation Using Pseudorandom Functions
+    target: https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-108r1-upd1.pdf
+    author:
+      -
+        name: Lily Chen
+    date: August 2022
+    seriesinfo:
+      DOI: 10.6028/NIST.SP.800-108r1-upd1
 
 --- abstract
 
@@ -122,9 +135,9 @@ Ascon-Based Lightweight Cryptography Standards for Constrained Devices
 an authenticated encryption with associated data (AEAD) algorithm; Ascon-Hash256,
 a hash function; and two eXtendable Output Functions (XOFs).
 
-As, in COSE, only AEAD and hash functions of Ascon family are relevant, this document
-focuses on the usage of Ascon-AEAD128 for COSE content encryption, and Ascon-Hash256
-for KDF and MAC procedures.
+This document focuses on the usage of Ascon-AEAD128 for content encryption,
+Ascon-Hash256 for hashing, Key Derivation Function (KDF) and Message Authentication Code (MAC) operations,
+and Ascon-MAC for KDF and MAC operations.
 
 This document does not define any new cryptography, only
 serializations of existing cryptographic systems described in
@@ -228,9 +241,9 @@ To introduce this functionality with Ascon, this document requests the registrat
 These algorithms are defined in {{coserecpalgos}}.
 
 |Name|Value|KDF|Description|
-|direct+HKDF-Ascon-Hash256|TBD (requested assigment -21)|HKDF Ascon-Hash256|Shared secret w/ HKDF Ascon-Hash256|
-|ECDH-ES+HKDF-Ascon-Hash256|TBD (requested assigment -22)|HKDF Ascon-Hash256|ECDH ES w/ HKDF Ascon-Hash256|
-|ECDH-SS+HKDF-Ascon-Hash256|TBD (requested assigment -23)|HKDF Ascon-Hash256|ECDH SS w/ HKDF Ascon-Hash256|
+|direct+HKDF-Ascon-Hash256|TBD (requested assigment -22)|HKDF Ascon-Hash256|Shared secret w/ HKDF Ascon-Hash256|
+|ECDH-ES+HKDF-Ascon-Hash256|TBD (requested assigment -23)|HKDF Ascon-Hash256|ECDH ES w/ HKDF Ascon-Hash256|
+|ECDH-SS+HKDF-Ascon-Hash256|TBD (requested assigment -24)|HKDF Ascon-Hash256|ECDH SS w/ HKDF Ascon-Hash256|
 {: #coserecpalgos title="New COSE recipient algorithms with HKDF Ascon-Hash256"}
 
 To accomodate the new algorithms specified in {{cosekdfalgos}}, this document extends the relevant header algorithm parameters as shown in {{cosealgorithmparams}}.
@@ -252,8 +265,57 @@ The direct+HKDF-Ascon-Hash256 algorithm MUST be used as described in Section 8.5
 
 Ascon-MAC {#mac}
 -------------
+*Note: NIST is yet to standardize Ascon algorithms for MAC and KDF. So this section can be modified based on the upcoming Ascon NIST publication*
 
 This document introduces Ascon-MAC for KDF and MAC COSE operations. 
+
+### Ascon-MAC for MAC operations ###
+
+In COSE, Ascon-MAC for MAC operations SHALL be used directly.
+This algorithm is described in {{cosemacalgos2}}.
+
+|Name|Value|MAC|Tag Length|Description|
+|Ascon-MAC|TBD|Ascon-MAC|256 bits|Ascon MAC|
+|Ascon-MAC/64|TBD|Ascon-MAC|64 bits|Ascon MAC truncated to 64 bits|
+{: #cosemacalgos2 title="New COSE MAC algorithms with Ascon-MAC"}
+
+The creation and verification of COSE MAC using the algorithms from {{cosemacalgos2}} MUST follow Section 6.3 of {{RFC9052}}.
+
+### Ascon-MAC for KDF operations ###
+
+In COSE, Ascon-MAC SHALL be used directly as PRF for KDF operations, similarly to KMAC {{NIST.SP.800-108r1-upd1}}.
+
+|Name|PRF|Description|
+|Ascon-MAC KDF|Ascon-MAC|KDF using Ascon-MAC as PRF|
+{: #cosekdfalgos2 title="New COSE KDF algorithms with Ascon-MAC"}
+
+In addition to application-specific usage, COSE KDFs are used for Direct Key with KDF and Direct Key Agreement key distribution methods.
+To introduce this functionality with Ascon, this document requests the registration of the following recipient algorithms: Direct Key with HKDF Ascon-Hash256, Key Agreement with Ephemeral-Static (ES) Ellyptic-Curve Diffie-Hellman (ECDH), and Key Agreement with Static-Static (SS) ECDH.
+These algorithms are defined in {{coserecpalgos2}}.
+
+|Name|Value|KDF|Description|
+|direct+KDF-Ascon-MAC|TBD|Ascon-MAC KDF|Shared secret w/ Ascon-MAC KDF|
+|ECDH-ES+KDF-Ascon-MAC|TBD|Ascon-MAC KDF|ECDH ES w/ Ascon-MAC KDF|
+|ECDH-SS+KDF-Ascon-MAC|TBD|Ascon-MAC KDF|ECDH SS w/ Ascon-MAC KDF|
+{: #coserecpalgos2 title="New COSE recipient algorithms with Ascon-MAC KDF"}
+
+To accomodate the new algorithms specified in {{cosekdfalgos2}}, this document extends the relevant header algorithm parameters as shown in {{cosealgorithmparams2}}.
+
+|Name|Label|Type|New Algorithm|Description|
+|salt|-20|bstr|direct+KDF-Ascon-MAC,ECDH-ES+KDF-Ascon-MAC,ECDH-SS+KDF-Ascon-MAC|Random salt|
+|PartyU identity|-21|bstr|direct+KDF-Ascon-MAC,ECDH-ES+KDF-Ascon-MAC,ECDH-SS+KDF-Ascon-MAC|PartyU identity information|
+|PartyU nonce|-22|bstr/int|direct+KDF-Ascon-MAC,ECDH-ES+KDF-Ascon-MAC,ECDH-SS+KDF-Ascon-MAC|PartyU provided nonce|
+|PartyU other|-23|bstr|direct+KDF-Ascon-MAC,ECDH-ES+KDF-Ascon-MAC,ECDH-SS+KDF-Ascon-MAC|PartyU other provided information|
+|PartyV identity|-24|bstr|direct+KDF-Ascon-MAC,ECDH-ES+KDF-Ascon-MAC,ECDH-SS+KDF-Ascon-MAC|PartyV identity information|
+|PartyV nonce|-25|bstr/int|direct+KDF-Ascon-MAC,ECDH-ES+KDF-Ascon-MAC,ECDH-SS+KDF-Ascon-MAC|PartyV provided nonce|
+|PartyV other|-26|bstr|direct+KDF-Ascon-MAC,ECDH-ES+KDF-Ascon-MAC,ECDH-SS+KDF-Ascon-MAC|PartyV other provided information|
+|ephemeral key|-1|COSE_Key|ECDH-ES+KDF-Ascon-MAC|Ephemeral public key for the sender|
+|static key|-2|COSE_Key|ECDH-SS+KDF-Ascon-MAC|Static public key for the sender|
+|static key id|-3|bstr|ECDH-SS+KDF-Ascon-MAC|Static public key identifier for the sender|
+{: #cosealgorithmparams2 title="Updates to COSE header algorithm parameters"}
+
+The direct+HKDF-Ascon-Hash256 algorithm MUST be used as described in Section 8.5.1 of {{RFC9052}} and Section 6.1.2 of {{RFC9053}}. The ECDH-ES+HKDF-Ascon-Hash256 and ECDH-SS+HKDF-Ascon-Hash256 algorithms MUST be used as described in Section 8.5.4 of {{RFC9052}} and Section 6.3.1 of {{RFC9053}}.
+{:/comment}
 
 <!--
 IV Header Parameter   {#iv}
@@ -273,7 +335,7 @@ specified it SHALL refer to the N argument of the corresponding Ascon function.
 Security Considerations  {#security}
 =======================
 
-The security considerations for {{NIST.SP.800-232}}, {{RFC7516}}, {{RFC7517}} and {{RFC9052}} apply to
+The security considerations of {{NIST.SP.800-232}}, {{RFC9052}} and {{RFC9053}} apply to
 this specification as well. 
 
 According to the most recent security analysis publications, Ascon did not show any
@@ -285,7 +347,7 @@ IANA Considerations  {#iana}
 ===================
 
 Additions to COSE Algorithms Registry
---------------------------------
+-------------------------------------
 
 IANA is requested to add the following entries to the COSE Algorithms
 Registry. The following completed registration templates are
@@ -335,19 +397,33 @@ for Ascon-AEAD128/32 and HMAC Ascon-Hash256/64 are set to
 
 *  Recommended: Filter Only
 
-### direct+HKDF-Ascon-Hash256 for COSE ###
+### Ascon-Hash256 for COSE ###
 
-*  Name: direct+HKDF-Ascon-Hash256
+*  Name: Ascon-Hash256
 
 *  Value: TBD (requested assignment -20)
 
-*  Description: Shared secret w/ HKDF Ascon-Hash256
+*  Description: Ascon 256-bit hash
 
 *  Capabilities: [kty]
 
 *  Reference: NIST SP 800-232
 
 *  Recommended: Yes
+
+### Ascon-Hash256/64 for COSE ###
+
+*  Name: Ascon-Hash256/64
+
+*  Value: TBD (requested assignment -21)
+
+*  Description: Ascon 256-bit hash truncated to 64 bits
+
+*  Capabilities: [kty]
+
+*  Reference: NIST SP 800-232
+
+*  Recommended: Filter Only
 
 ### HMAC Ascon-Hash256 for COSE ###
 
@@ -376,6 +452,161 @@ for Ascon-AEAD128/32 and HMAC Ascon-Hash256/64 are set to
 *  Reference: NIST SP 800-232
 
 *  Recommended: Filter Only
+
+### direct+HKDF-Ascon-Hash256 for COSE ###
+
+*  Name: direct+HKDF-Ascon-Hash256
+
+*  Value: TBD (requested assignment -22)
+
+*  Description: Shared secret w/ HKDF Ascon-Hash256
+
+*  Capabilities: [kty]
+
+*  Reference: NIST SP 800-232
+
+*  Recommended: Yes
+
+### ECDH-ES+HKDF-Ascon-Hash256 for COSE ###
+
+*  Name: ECDH-ES+HKDF-Ascon-Hash256
+
+*  Value: TBD (requested assignment -23)
+
+*  Description: ECDH ES w/ HKDF Ascon-Hash256
+
+*  Capabilities: [kty]
+
+*  Reference: NIST SP 800-232
+
+*  Recommended: Yes
+
+### ECDH-SS+HKDF-Ascon-Hash256 for COSE ###
+
+*  Name: ECDH-SS+HKDF-Ascon-Hash256
+
+*  Value: TBD (requested assignment -24)
+
+*  Description: ECDH SS w/ HKDF Ascon-Hash256
+
+*  Capabilities: [kty]
+
+*  Reference: NIST SP 800-232
+
+*  Recommended: Yes
+
+### Ascon-MAC for COSE ###
+
+*  Name: Ascon-MAC
+
+*  Value: TBD
+
+*  Description: Ascon MAC
+
+*  Capabilities: [kty]
+
+*  Reference: NIST SP 800-232
+
+*  Recommended: Yes
+
+### Ascon-MAC/64 for COSE ###
+
+*  Name: Ascon-MAC/64
+
+*  Value: TBD
+
+*  Description: Ascon MAC truncated to 64 bits
+
+*  Capabilities: [kty]
+
+*  Reference: NIST SP 800-232
+
+*  Recommended: Filter Only
+
+### direct+KDF-Ascon-MAC for COSE ###
+
+*  Name: direct+KDF-Ascon-MAC
+
+*  Value: TBD
+
+*  Description: Shared secret w/ Ascon-MAC KDF
+
+*  Capabilities: [kty]
+
+*  Reference: NIST SP 800-232
+
+*  Recommended: Yes
+
+### ECDH-ES+KDF-Ascon-MAC for COSE ###
+
+*  Name: ECDH-ES+KDF-Ascon-MAC
+
+*  Value: TBD
+
+*  Description: ECDH ES w/ Ascon-MAC KDF
+
+*  Capabilities: [kty]
+
+*  Reference: NIST SP 800-232
+
+*  Recommended: Yes
+
+### ECDH-SS+KDF-Ascon-MAC for COSE ###
+
+*  Name: ECDH-SS+KDF-Ascon-MAC
+
+*  Value: TBD
+
+*  Description: ECDH SS w/ Ascon-MAC KDF
+
+*  Capabilities: [kty]
+
+*  Reference: NIST SP 800-232
+
+*  Recommended: Yes
+
+Additions to COSE Header Algorithm Parameters Registry
+----------------------------------------------------
+
+### salt ###
+
+* Algorithm: ..., direct+HKDF-Ascon-Hash256,ECDH-ES+HKDF-Ascon-Hash256,ECDH-SS+HKDF-Ascon-Hash256, direct+KDF-Ascon-MAC,ECDH-ES+KDF-Ascon-MAC,ECDH-SS+KDF-Ascon-MAC
+
+### PartyU identity ###
+
+* Algorithm: ..., direct+HKDF-Ascon-Hash256,ECDH-ES+HKDF-Ascon-Hash256,ECDH-SS+HKDF-Ascon-Hash256, direct+KDF-Ascon-MAC,ECDH-ES+KDF-Ascon-MAC,ECDH-SS+KDF-Ascon-MAC
+
+### PartyU nonce ###
+
+* Algorithm: ..., direct+HKDF-Ascon-Hash256,ECDH-ES+HKDF-Ascon-Hash256,ECDH-SS+HKDF-Ascon-Hash256, direct+KDF-Ascon-MAC,ECDH-ES+KDF-Ascon-MAC,ECDH-SS+KDF-Ascon-MAC
+
+### PartyU other ###
+
+* Algorithm: ..., direct+HKDF-Ascon-Hash256,ECDH-ES+HKDF-Ascon-Hash256,ECDH-SS+HKDF-Ascon-Hash256, direct+KDF-Ascon-MAC,ECDH-ES+KDF-Ascon-MAC,ECDH-SS+KDF-Ascon-MAC
+
+### PartyV identity ###
+
+* Algorithm: ..., direct+HKDF-Ascon-Hash256,ECDH-ES+HKDF-Ascon-Hash256,ECDH-SS+HKDF-Ascon-Hash256, direct+KDF-Ascon-MAC,ECDH-ES+KDF-Ascon-MAC,ECDH-SS+KDF-Ascon-MAC
+
+### PartyV nonce ###
+
+* Algorithm: ..., direct+HKDF-Ascon-Hash256,ECDH-ES+HKDF-Ascon-Hash256,ECDH-SS+HKDF-Ascon-Hash256, direct+KDF-Ascon-MAC,ECDH-ES+KDF-Ascon-MAC,ECDH-SS+KDF-Ascon-MAC
+
+### PartyV other ###
+
+* Algorithm: ..., direct+HKDF-Ascon-Hash256,ECDH-ES+HKDF-Ascon-Hash256,ECDH-SS+HKDF-Ascon-Hash256, direct+KDF-Ascon-MAC,ECDH-ES+KDF-Ascon-MAC,ECDH-SS+KDF-Ascon-MAC
+
+### ephemeral key ###
+
+* Algorithm: ..., ECDH-ES+HKDF-Ascon-Hash256, ECDH-ES+KDF-Ascon-MAC
+
+### static key ###
+
+* Algorithm: ..., ECDH-SS+HKDF-Ascon-Hash256, ECDH-SS+KDF-Ascon-MAC
+
+### static key id ###
+
+* Algorithm: ..., ECDH-SS+HKDF-Ascon-Hash256, ECDH-SS+KDF-Ascon-MAC
 
 --- back
 

@@ -102,17 +102,13 @@ informative:
 
 --- abstract
 
-This document describes CBOR Object Signing and Encryption (COSE) serialization with Ascon,
- a NIST standard for lightweight cryptography.
+This document describes CBOR Object Signing and Encryption (COSE) serialization with Ascon.
 
-In 2019, as a part of CAESAR competition, Ascon-128 and Ascon-128a were
-selected as the first choice for the lightweight authenticated encryption.
-After, in 2023, National Institute of Standards and Technology (NIST) selected
-Ascon family of cryptographic algorithms to be the standard for lightweight
-cryptography. In August 2025, NIST Special Publication 800-232 was released,
-defining Ascon-based lightweight cryptography standards for constrained
-devices. This recognition makes it particularly interesting
-to enable using Ascon with COSE structures.
+The Ascon algorithm has been published in NIST Special Publication 800-232 in August 2025,
+as the winner of a competition for lightweight authenticated encryption.
+The NIST publication describes its use for constrained devices.
+This document makes it available in the COSE ecosystem
+for authenticated encryption, hashing, Message Authentication Code (MAC), and related operations.
 
 --- middle
 
@@ -207,7 +203,7 @@ Ascon hash algorithm is parametrized by the rate r, the number of permutation ro
 In COSE, hash algorithms are used directly, for example, for object identification with a fingerprint, or indirect signatures (see {{RFC9054}}).
 {{cosehashalgos}} specifies two Ascon-Hash256 algorithms for COSE to satisfy these use cases.
 
-|Name|Value|Description||Recommended|
+|Name|Value|Description|Recommended|
 |Ascon-Hash256|TBD (requested assignment -20)|Ascon 256-bit hash|Yes|
 |Ascon-Hash256/64|TBD (requested assignment -21)|Ascon 256-bit hash truncated to 64 bits|Filter Only|
 {: #cosehashalgos title="New COSE hash algorithms with Ascon"}
@@ -216,8 +212,8 @@ The truncated version the Ascon hash allows for a smaller transmission overhead 
 
 ### Ascon-Hash256 for MAC operations ###
 
-In COSE, integration Ascon-Hash256 for MAC operations SHALL be implemented via HMAC algorithm {{RFC2104}}.
-This algorithm is described in {{cosemacalgos}}.
+In COSE, Ascon-Hash256 for MAC operations SHALL be implemented via HMAC algorithm {{RFC2104}}.
+This registered algorithms are described in {{cosemacalgos}}.
 
 |Name|Value|Hash|Tag Length|Description|
 |HMAC Ascon-Hash256|TBD (requested assigment 8)|Ascon-Hash256|256 bits|HMAC w/ Ascon-Hash256|
@@ -228,7 +224,7 @@ The creation and verification of COSE MAC using the algorithms from {{cosemacalg
 
 ### Ascon-Hash256 for KDF operations ###
 
-In COSE, integration Ascon-Hash256 for KDF operations SHALL be done via HMAC-based Extract-and-Expand KDF (HKDF) defined in {{RFC5869}}.
+In COSE, Ascon-Hash256 for KDF operations SHALL be done via HMAC-based Extract-and-Expand KDF (HKDF) defined in {{RFC5869}}.
 HKDF leverages HMAC mechanism described in {{RFC2104}}. HMAC is an algorithm allowing usage of
 arbirtary cryptographic hash functions for message authentication. This KDF is described in {{cosekdfalgos}}.
 
